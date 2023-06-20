@@ -1,0 +1,24 @@
+kubectl apply -f aws-secret.yaml
+kubectl apply -f env-configmap.yaml
+kubectl apply -f env-secret.yaml
+kubectl apply -f backend-user-deployment.yaml
+kubectl apply -f backend-feed-deployment.yaml
+kubectl apply -f frontend-deployment.yaml
+kubectl apply -f reverseproxy-deployment.yaml
+
+kubectl apply -f backend-user-service.yaml
+kubectl apply -f backend-feed-service.yaml
+kubectl apply -f frontend-service.yaml
+kubectl apply -f reverseproxy-service.yaml
+
+kubectl expose deployment fe-app --type=LoadBalancer --name=publicfrontend
+
+kubectl expose deployment reverseproxy-app --type=LoadBalancer --name=publicreverseproxy
+
+docker build -t nhattcd99/udagram:v4.0.0 .
+kubectl set image deployment fe-app udagram-frontend=nhattcd99/udagram-frontend:v4.0.0
+
+kubectl autoscale deployment fe-app --min=2 --max=5 --cpu-percent=20
+
+kubectl rollout restart deployment be-feed-app
+

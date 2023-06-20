@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf-env-app
+  namespace: default
+data:
+  AWS_BUCKET: bk-udacity-project3
+  POSTGRES_HOST: rds-udacity.c958axoldbk5.us-east-1.rds.amazonaws.com
+  URL: http://a3ce7b54d8ed347c3b3dced889caa9ff-1370636035.us-west-2.elb.amazonaws.com

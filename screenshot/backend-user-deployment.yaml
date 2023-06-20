@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: be-user-app
+  labels:
+    app: be-user-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: be-user-app
+  template:
+    metadata:
+      labels:
+        app: be-user-app
+    spec:
+      containers:
+      - name: udagram-api-user
+        image: nhattcd99/udagram-api-user:v1.0.0
+        env:
+        - name: POSTGRES_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: sec-env-app
+              key: POSTGRES_USERNAME
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sec-env-app
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: sec-env-app
+              key: POSTGRES_DB
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: sec-env-app
+              key: JWT_SECRET
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: conf-env-app
+              key:  POSTGRES_HOST
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              name: sec-app
+              key: AWS_REGION
+        - name: AWS_PROFILE
+          valueFrom:
+            secretKeyRef:
+              name: sec-app
+              key: AWS_PROFILE
+        - name: AWS_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: conf-env-app
+              key:  AWS_BUCKET
+        - name: URL
+          valueFrom:
+            configMapKeyRef:
+              name: conf-env-app
+              key:  URL
+        - name: AWS_DEFAULT_REGION
+          valueFrom:
+              secretKeyRef:
+                name: sec-app
+                key: AWS_DEFAULT_REGION
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: aws-secret
+          mountPath: "/root/.aws/"
+          readOnly: true
+      restartPolicy: Always
+      volumes:
+      - name: aws-secret
+        secret:
+          secretName: sec-app
